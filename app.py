@@ -5,7 +5,6 @@ import os
 
 app = Flask(__name__)
 
-# Load model & dataset safely
 BASE_DIR = os.path.dirname(__file__)
 
 model = joblib.load(os.path.join(BASE_DIR, "model.pkl"))
@@ -26,7 +25,6 @@ def predict():
     try:
         session_id = request.form['session_id']
 
-        # Select row
         if "session_id" in data.columns:
             row = data[data["session_id"].astype(str) == session_id]
         else:
@@ -42,7 +40,6 @@ def predict():
                                    prediction_text="Session not found",
                                    session_ids=session_ids)
 
-        # Drop unnecessary columns
         drop_cols = ["session_id", "attack_detected"]
         row = row.drop(columns=[col for col in drop_cols if col in row.columns])
 
@@ -52,7 +49,6 @@ def predict():
 
         result = "🚨 Intrusion Detected - Blocking IP" if prediction[0] == 1 else "✅ Normal Traffic"
 
-        # Fix session_ids again here
         if "session_id" in data.columns:
             session_ids = data["session_id"].astype(str).tolist()
         else:
